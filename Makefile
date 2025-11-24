@@ -1,5 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -pthread
+# CFLAGS = -Wall -pthread #Linux
+CFLAGS = -Wall -lpthread  #Windows (MinGW)
 SRC = src/main.c
 OBJ = main
 IPATH = -Isrc

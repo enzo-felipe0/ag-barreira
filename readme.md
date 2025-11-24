@@ -29,11 +29,49 @@ projeto_ag_barreira/
 ```
 
 
-## 💻 Pré-requisitos
+## 💻 Pré-requisitos (Linux)
 
 *   **Compilador GCC:** Suporte a C99 ou superior.
 *   **Ambiente Linux/Unix:** Devido ao uso da biblioteca `pthread` e `unistd.h`. (No Windows, recomenda-se usar WSL).
 *   **Make:** Para utilizar a automação de build.
+
+## 💻 Pré-requisitos (Windows)
+
+*  **MSYS2**
+
+## Instalando no Windows:
+
+* Dentro do **MSYS2 MSYS**, rodar o comando abaixo para atualizar o sistema:
+
+```
+pacman -Syu
+```
+* Abrir o **MSYS2 MinGW64**
+* Instalar o ambiente **MinGW-w64 com suporte a pthread** 
+
+```
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-libwinpthread-git
+```
+
+* Clonar o repositório
+
+```
+git clone https://github.com/enzo-felipe0/ag-barreira.git
+cd ag-barreira
+```
+## Adaptação no Makefile
+
+Antes de compilar e executar é extremamente importante adaptar o Makefile para o seu sistema operacional.
+
+* Linux: 
+```
+-pthread
+```
+
+* Windows (MinGW):
+```
+-lpthread
+```
 
 ## ⚙️ Compilação e Execução
 
@@ -42,18 +80,24 @@ Utilize o `Makefile` incluído para gerenciar o projeto facilmente.
 1.  **Compilar o projeto:**
     ```
     make all
+    ou
+    mingw32-make all
     ```
     Isso gerará um executável chamado `main`.
 
 2.  **Executar a simulação:**
     ```
     make run
+    ou
+    mingw32-make run
     ```
     Ou manualmente: `./main`
 
 3.  **Limpar arquivos compilados:**
     ```
     make clean
+    ou
+    mingw32-make clean
     ```
 
 ## 📊 Entendendo a Saída (Log)

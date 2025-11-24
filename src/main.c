@@ -64,7 +64,7 @@ void* genetic_algorithm_worker(void* arg) {
     for (int gen = 1; gen <= NUM_GENERATIONS; gen++) {
         long start_time = get_time_ms();
 
-        printf("Thread %d: Iniciando Geração %d (Calculando Fitness...)\n", task->id, gen);
+        printf("Thread %d: Iniciando Geracao %d (Calculando Fitness...)\n", task->id, gen);
 
         // Simulação de Custo Computacional (C)
         // Em um AG real, aqui estaria o loop de avaliação da população
@@ -75,17 +75,17 @@ void* genetic_algorithm_worker(void* arg) {
 
         // Verificação de Deadline (Soft Real-Time)
         if (duration > task->deadline_ms) {
-            printf("Thread %d: [ALERTA] Deadline perdido na Geração %d!\n", task->id, gen);
+            printf("Thread %d: [ALERTA] Deadline perdido na Geracao %d!\n", task->id, gen);
         }
 
-        printf("Thread %d: Terminou Geração %d em %ldms. Esperando na barreira...\n", task->id, gen, duration);
+        printf("Thread %d: Terminou Geracao %d em %ldms. Esperando na barreira...\n", task->id, gen, duration);
 
         // >>> PONTO DE SINCRONIZAÇÃO <<<
         // Nenhuma thread passa daqui até que todas cheguem
         enter_barrier(task->id);
 
         // Após a barreira, teoricamente ocorreria a troca de dados (migração/crossover)
-        printf("Thread %d: Passou da barreira. Preparando próxima geração.\n", task->id);
+        printf("Thread %d: Passou da barreira. Preparando proxima geracao.\n", task->id);
     }
 
     pthread_exit(NULL);
@@ -95,7 +95,7 @@ int main() {
     pthread_t threads[NUM_THREADS];
     TaskInfo task_info[NUM_THREADS];
 
-    printf("--- Início da Simulação de AG Paralelo com Barreira ---\n");
+    printf("--- Inicio da Simulacao de AG Paralelo com Barreira ---\n");
 
     // Inicializa a barreira para esperar NUM_THREADS
     init_barrier(NUM_THREADS);
@@ -123,6 +123,6 @@ int main() {
     pthread_mutex_destroy(&my_barrier.mutex);
     pthread_cond_destroy(&my_barrier.cond);
 
-    printf("--- Simulação Finalizada com Sucesso ---\n");
+    printf("--- Simulacao Finalizada com Sucesso ---\n");
     return 0;
 }
