@@ -137,5 +137,5 @@ Cada tarefa (thread) é definida pela struct `TaskInfo`:
 *   **D (Deadline):** Verificado após cada execução. Se `tempo_gasto > deadline`, um alerta é emitido no console, simulando uma falha de *Soft Real-Time*.
 
 ---
-**Autores:** Amanda Caroline, Enzo Felipe e Gustavo Antonio
+**Autores:** Amanda Caroline, Enzo Felipe, Gustavo Antonio e Leonardo Abreu
 **Data:** Novembro 2025
