@@ -1,4 +1,4 @@
-#define _XOPEN_SOURCE 500 // Necessário para usleep
+#define _XOPEN_SOURCE 500 // usado para usleep
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -6,20 +6,20 @@
 #include <sys/time.h>
 #include "barrier.h"
 
-#define NUM_THREADS 4      // Número de "Ilhas" ou processadores
-#define NUM_GENERATIONS 5  // Quantas gerações vamos simular
+#define NUM_THREADS 4      // numero de islands ou processadores
+#define NUM_GENERATIONS 5  // quantas geracoes vamos simular
 
-// Instância global da barreira
+// instancia global da barreira
 Barrier my_barrier;
 
-// --- Funções Auxiliares de Tempo ---
+// --- funcoes aux de tempo ---
 long get_time_ms() {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
 
-// --- Implementação da Barreira (Lógica do Monitor) ---
+// --- implementacao de uma Barreira (logica usada pro monitor) ---
 void init_barrier(int n) {
     pthread_mutex_init(&my_barrier.mutex, NULL);
     pthread_cond_init(&my_barrier.cond, NULL);
@@ -29,35 +29,35 @@ void init_barrier(int n) {
 }
 
 void enter_barrier(int thread_id) {
-    // 1. LOCK (Entrada na região crítica)
+    // 1. LOCK (Entrada na regiao critica)
     pthread_mutex_lock(&my_barrier.mutex);
     
     my_barrier.count++;
     int current_gen = my_barrier.generation_count;
 
     if (my_barrier.count == my_barrier.total_threads) {
-        // Eu sou a ÚLTIMA thread a chegar!
-        // A tarefa é: Zerar o contador e acordar todo mundo.
+        //ULTIMA thread a chegar
+        //tarefa: zerar o contador e acordar todo mundo
         my_barrier.count = 0;
-        my_barrier.generation_count++; // Avança fase da barreira
+        my_barrier.generation_count++; // passa fase da barreira
         
         printf("[SISTEMA] Barreira completada! Todas %d threads chegaram. Liberando...\n", my_barrier.total_threads);
         
-        // BROADCAST: Acorda todas as threads dormindo na variável condicional
+        // BROADCAST: acorda todas as threads dormindo na variavel condicional
         pthread_cond_broadcast(&my_barrier.cond);
     } else {
-        // Não sou a última. Devo dormir.
-        // Loop while para evitar "spurious wakeups" (acordar sem querer)
+        // n é a última. -> deve dormir
+        // loop while para evitar "spurious wakeups" (acordar sem querer)
         while (current_gen == my_barrier.generation_count) {
             pthread_cond_wait(&my_barrier.cond, &my_barrier.mutex);
         }
     }
 
-    // 2. UNLOCK (Saída da região crítica)
+    // 2. UNLOCK (saida da regiao critica)
     pthread_mutex_unlock(&my_barrier.mutex);
 }
 
-// --- A Tarefa da Thread (Worker) ---
+// --- a tarefa da thread (worker) ---
 void* genetic_algorithm_worker(void* arg) {
     TaskInfo* task = (TaskInfo*)arg;
     
@@ -66,25 +66,24 @@ void* genetic_algorithm_worker(void* arg) {
 
         printf("Thread %d: Iniciando Geracao %d (Calculando Fitness...)\n", task->id, gen);
 
-        // Simulação de Custo Computacional (C)
-        // Em um AG real, aqui estaria o loop de avaliação da população
+        // simulação de custo computacional (C)
         usleep(task->execution_cost_ms * 1000); 
 
         long end_time = get_time_ms();
         long duration = end_time - start_time;
 
-        // Verificação de Deadline (Soft Real-Time)
+        // verificação de deadline (soft real time)
         if (duration > task->deadline_ms) {
             printf("Thread %d: [ALERTA] Deadline perdido na Geracao %d!\n", task->id, gen);
         }
 
         printf("Thread %d: Terminou Geracao %d em %ldms. Esperando na barreira...\n", task->id, gen, duration);
 
-        // >>> PONTO DE SINCRONIZAÇÃO <<<
-        // Nenhuma thread passa daqui até que todas cheguem
+        // >>> PONTO DE SINCRONIZACAO <<<
+        // thread só passa se todas já tiverem chegado
         enter_barrier(task->id);
 
-        // Após a barreira, teoricamente ocorreria a troca de dados (migração/crossover)
+        // apos a barreira, deve ocorrer a troca de dados (crossover)
         printf("Thread %d: Passou da barreira. Preparando proxima geracao.\n", task->id);
     }
 
@@ -97,16 +96,16 @@ int main() {
 
     printf("--- Inicio da Simulacao de AG Paralelo com Barreira ---\n");
 
-    // Inicializa a barreira para esperar NUM_THREADS
+    // inicializa a barreira para esperar NUM_THREADS
     init_barrier(NUM_THREADS);
 
-    // Criação das Threads
+    //criacao das threads
     for (int i = 0; i < NUM_THREADS; i++) {
         task_info[i].id = i;
-        // Definindo características de tempo real:
-        // Vamos variar o custo para ver a barreira funcionando (umas rápidas, outras lentas)
-        task_info[i].execution_cost_ms = 200 + (i * 150); // Thread 0: 200ms, Thread 3: 650ms
-        task_info[i].deadline_ms = 1000; // Deadline de 1 segundo por geração
+        //define caracteristicas de tempo real:
+        //varia o custo para ver a barreira funcionando (umas rapidas, outras lentas)
+        task_info[i].execution_cost_ms = 200 + (i * 150); // thread 0: 200ms, Thread 3: 650ms
+        task_info[i].deadline_ms = 1000; // deadline de 1 segundo por geracao
         
         if (pthread_create(&threads[i], NULL, genetic_algorithm_worker, (void*)&task_info[i])) {
             perror("Erro ao criar thread");
@@ -114,12 +113,12 @@ int main() {
         }
     }
 
-    // Join (Espera todas terminarem todas as gerações)
+    // Join (Espera todas terminarem todas as geracoes)
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads[i], NULL);
     }
 
-    // Limpeza
+    // limpa
     pthread_mutex_destroy(&my_barrier.mutex);
     pthread_cond_destroy(&my_barrier.cond);
 

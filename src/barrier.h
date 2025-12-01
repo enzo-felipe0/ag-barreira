@@ -3,20 +3,20 @@
 
 #include <pthread.h>
 
-// Estrutura que representa nosso Monitor de Barreira
+// estrutura que representa o monitor de barreira
 typedef struct {
-    pthread_mutex_t mutex;      // Garante acesso exclusivo ao contador
-    pthread_cond_t cond;        // Onde as threads "dormem" esperando a barreira abrir
-    int count;                  // Quantas threads já chegaram na barreira
-    int total_threads;          // Quantas threads são esperadas no total
-    int generation_count;       // Contador para controlar a "fase" da barreira (evita wakeups espúrios)
+    pthread_mutex_t mutex;      // garante acesso exclusivo ao contador
+    pthread_cond_t cond;        // "lugar" onde as threads "dormem" esperando a barreira abrir
+    int count;                  // quantas threads ja chegaram na barreira
+    int total_threads;          // quantas threads sao esperadas
+    int generation_count;       // contador para controlar a "fase" da barreira 
 } Barrier;
 
-// Estrutura para simular características de Tempo Real
+// estrutura para simular caracteristicas de tempo real
 typedef struct {
     int id;
-    long execution_cost_ms;     // (C) Tempo estimado de computação
-    long deadline_ms;           // (D) Tempo limite para terminar
+    long execution_cost_ms;     // (C) tempo estimado de computacao
+    long deadline_ms;           // (D) tempo limite para terminar
 } TaskInfo;
 
 #endif
